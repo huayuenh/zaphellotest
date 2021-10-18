@@ -1,0 +1,4 @@
+#!/bin/bash
+#Swagger definition is available using ${API_DATA_FILE}
+#cat "${API_DATA_FILE}" 
+

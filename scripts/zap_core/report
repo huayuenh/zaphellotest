@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+# saved in a file called reportfile. delete after processing is complete
+# eg 'cat reportfile'
+
+artifact="app-image"
+save_result "${artifact}-dynamic_scan-attachments" "${WORKSPACE}/${REPORTFILE}"
+save_artifact "${artifact}" dynamic_scan-result=1
+echo "${REPORTFILE}"
+cat ${REPORTFILE}
