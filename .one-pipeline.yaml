@@ -58,8 +58,8 @@ dynamic-scan:
   script: |
     #!/usr/bin/env bash
 
-    #export the APP_URL to make it avaiilable for the zap asyn run
-    export APP_URL=$(cat ../app-url)
+    #export the APP_URL to make it available for the zap asyn run. First set in the build script
+    export_env "app-url"
     # feature preivew this until evidence locker v2 usage is full feature ready 
     # can be triggered, and owasp will run for preview purposes 
 
@@ -157,7 +157,7 @@ owasp-zap:
     # reading back the param that was exported in the dynamic-scan setup stage. See dynamic-scan stage
     export URL
     #app-url exported in the dynamic-scan stage
-    URL="$(get_env app-url "")
+    URL="$(get_env app-url "")"
     set_env "target-application-server-url" "${URL}"
 
     # set the swagger defintion file(s) comma separated if required
