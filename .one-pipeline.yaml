@@ -64,7 +64,7 @@ dynamic-scan:
     # can be triggered, and owasp will run for preview purposes 
 
     source "${ONE_PIPELINE_PATH}"/tools/trigger-task
-    trigger-task "owasp-zap" "dynamic_scan"
+    #trigger-task "owasp-zap" "dynamic_scan"
 
 acceptance-test:
   abort_on_failure: false
@@ -109,12 +109,17 @@ owasp-zap:
     # The user might wish to have a common repo which holds the core zap scripts
     # And have specific scripts in the application repo
 
+    # IMAGE REPOS
+    # the zap api and zap ui scan use three images. For the moment, it is required to build and self host the images
+    # zap-api-image https://github.ibm.com/owasp-tools/api-dynamic-scans/tree/onePipelinev2UBI Note the branch
+    # zap-ui-image https://github.ibm.com/owasp-tools/ui-dynamic-scans
+    # zap-proxy-image https://github.ibm.com/owasp-tools/zap-proxy 
+
     # CLONE REPO
-    # Example common repo containing the core zap scripts
+    # Example using a common repo containing the core zap scripts
     # GIT_TOKEN="$(get_env git-token "")" where git-token is a pipeline param set in the UI
     # git clone "https://${GIT_TOKEN}@github.ibm.com/huayuenh/myzap_repo"
     # set_env "zap-core-scripts" "myzap_repo/scripts/zap_core"
-
 
     # ##SCAN SET UP FOR API AND UI##
     
@@ -139,7 +144,7 @@ owasp-zap:
     set_env "zap-core-scripts" "one-pipeline-config-repo/scripts/zap_core"
 
     # SET UP A RESULTS FILTER High, Medium, Low, Informational (Optional)
-    set_env "filter-options" "Medium"
+    set_env "filter-options" "Informational"
 
     # SET UP ZAP API SCAN
     # set the zap api image
@@ -149,7 +154,7 @@ owasp-zap:
     # set_env "zap_dind" "true"
 
     # set the url of the app to scan
-    # reading back the param that was exported in the dynamic-scan setup stage
+    # reading back the param that was exported in the dynamic-scan setup stage. See dynamic-scan stage
     export URL
     #app-url exported in the dynamic-scan stage
     URL="$(get_env app-url "")
@@ -158,7 +163,9 @@ owasp-zap:
     # set the swagger defintion file(s) comma separated if required
     set_env "swagger-definition-files" "one-pipeline-config-repo/definitions/definitions1.json"
 
-    # set an optional custom file to modify the swagger definition before it is sent to be scan
+    # set an optional custom file to modify the swagger definition before it is sent to be scanned
+    # Note: zap scan requires the swagger definition to be in json format and with an additional wrapper. See definitions/definitions1.json
+    # The custom script option allows a script to process the raw input before the scan
     set_env "zap-api-custom-script" "one-pipeline-config-repo/scripts/zap-custom-scripts/custom-api-script"
 
     # start the scan
@@ -175,6 +182,7 @@ owasp-zap:
     set_env "target-application-server-url" "${URL}"
 
     # set the UI flag. By default it is set to false
+    # this flag "zap-ui-scan" can be set in the UI parameters of the pipeline and toggled between runs to better schedule which scans are run 
     set_env "zap-ui-scan" "true"
 
     # set the path the directory containing the UI test scripts
@@ -184,7 +192,7 @@ owasp-zap:
     # set_env "context-file" "one-pipeline-config-repo/scripts/zap-ui-test/contextfile/custom-context.context"
 
     # set an optional custom file to run during the UI set up. See example
-    # it might be a requirement to create a script container secrets for the UI tests to import
+    # it might be a requirement to create a script containeing secrets for the UI tests to import
     set_env "zap-ui-custom-script" "one-pipeline-config-repo/scripts/zap-custom-scripts/custom-ui-script"
 
     # start the scan
